@@ -27,4 +27,4 @@ jobs:
                 file: ./docker/puppetserver/Dockerfile
                 platforms: linux/amd64,linux/arm64
                 push: true
-                tags: abhay900/puppetserver:latest
+                tags: abhay900/pupptserver:latest

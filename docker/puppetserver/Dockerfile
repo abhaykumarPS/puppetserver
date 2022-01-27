@@ -47,7 +47,7 @@ EXPOSE 8140
 ENTRYPOINT ["dumb-init", "/docker-entrypoint.sh"]
 CMD ["foreground"]
 
-ADD https://github.com/Yelp/dumb-init/releases/download/v"$DUMB_INIT_VERSION"/dumb-init_"$DUMB_INIT_VERSION"_amd64.deb /
+ADD https://github.com/Yelp/dumb-init/releases/download/v"$DUMB_INIT_VERSION"/dumb-init_"$DUMB_INIT_VERSION"_arm64.deb /
 
 COPY docker/puppetserver/docker-entrypoint.sh \
      docker/puppetserver/healthcheck.sh \
@@ -61,8 +61,8 @@ HEALTHCHECK --interval=20s --timeout=15s --retries=12 --start-period=3m CMD ["/h
 RUN chmod +x /docker-entrypoint.sh /healthcheck.sh /docker-entrypoint.d/*.sh && \
     apt-get update && \
     apt-get install -y --no-install-recommends $PACKAGES && \
-    dpkg -i dumb-init_"$DUMB_INIT_VERSION"_amd64.deb && \
-    rm dumb-init_"$DUMB_INIT_VERSION"_amd64.deb
+    dpkg -i dumb-init_"$DUMB_INIT_VERSION"_arm64.deb && \
+    rm dumb-init_"$DUMB_INIT_VERSION"_arm64.deb
 
 ######################################################
 # edge (build from source)

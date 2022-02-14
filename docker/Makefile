@@ -52,23 +52,6 @@ else
 		-i $(hadolint_container) $(hadolint_command) Dockerfile
 endif
 
-build: prep
-	docker buildx build \
-		${DOCKER_BUILD_FLAGS} \
-		--load \
-		--pull \
-		--build-arg build_type=$(BUILD_TYPE) \
-		--build-arg vcs_ref=$(vcs_ref) \
-		--build-arg build_date=$(build_date) \
-		--build-arg version=$(VERSION) \
-		--build-arg pupperware_analytics_stream=$(PUPPERWARE_ANALYTICS_STREAM) \
-		--file puppetserver/Dockerfile \
-		--tag $(NAMESPACE)/puppetserver:$(VERSION) $(PWD)/..
-ifeq ($(IS_LATEST),true)
-	@docker tag $(NAMESPACE)/puppetserver:$(VERSION) \
-		$(NAMESPACE)/puppetserver:$(LATEST_VERSION)
-endif
-
 test: prep
 	@bundle install --path $$BUNDLE_PATH --gemfile $$GEMFILE --with test
 	@bundle update

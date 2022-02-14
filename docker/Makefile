@@ -52,13 +52,6 @@ else
 		-i $(hadolint_container) $(hadolint_command) Dockerfile
 endif
 
-test: prep
-	@bundle install --path $$BUNDLE_PATH --gemfile $$GEMFILE --with test
-	@bundle update
-	@PUPPET_TEST_DOCKER_IMAGE=$(NAMESPACE)/puppetserver:$(VERSION) \
-		bundle exec --gemfile $$GEMFILE \
-		rspec --options puppetserver/.rspec spec
-
 push-image: prep
 	docker buildx build --platform linux/arm64,linux/amd64 -t $(NAMESPACE)/puppetserver:$(VERSION) -f puppetserver/Dockerfile --push $(PWD)/..
 ifeq ($(IS_LATEST),true)

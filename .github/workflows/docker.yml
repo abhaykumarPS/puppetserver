@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - new
 
 jobs:
   build-and-publish:
@@ -22,6 +23,11 @@ jobs:
         with:
           ruby-version: 2.6.x
       - run: gem install bundler
+      - uses: actions/checkout@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
       - name: Build container
         working-directory: docker
         run: |
@@ -37,7 +43,6 @@ jobs:
         env:
           IS_RELEASE: true
         working-directory: docker
-        shell: bash {0}
         run: |
           make prep
           if [ $? -eq 0 ]; then
@@ -49,7 +54,6 @@ jobs:
         env:
           IS_RELEASE: true
         working-directory: docker
-        shell: bash {0}
         run: |
           make prep
           if [ $? -eq 0 ]; then

@@ -128,7 +128,7 @@ ARG deb_uri=https://apt.puppetlabs.com/puppet7-release-$UBUNTU_CODENAME.deb
 
 # dynamically selects "edge" or "release" alias based on ARG
 # hadolint ignore=DL3006
-FROM ${build_type} as final
+FROM ubuntu:18.04 as final
 
 ARG build_type
 ARG vcs_ref

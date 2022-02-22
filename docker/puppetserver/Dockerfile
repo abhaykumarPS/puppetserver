@@ -1,5 +1,6 @@
 ARG build_type=edge
 ARG UBUNTU_CODENAME=bionic
+ARG TARGETARCH
 
 ######################################################
 # base
@@ -47,7 +48,7 @@ EXPOSE 8140
 ENTRYPOINT ["dumb-init", "/docker-entrypoint.sh"]
 CMD ["foreground"]
 
-ADD https://github.com/Yelp/dumb-init/releases/download/v"$DUMB_INIT_VERSION"/dumb-init_"$DUMB_INIT_VERSION"_amd64.deb /
+ADD https://github.com/Yelp/dumb-init/releases/download/v"$DUMB_INIT_VERSION"/dumb-init_"$DUMB_INIT_VERSION"_${TARGETARCH}.deb /
 
 COPY docker/puppetserver/docker-entrypoint.sh \
      docker/puppetserver/healthcheck.sh \
@@ -61,8 +62,8 @@ HEALTHCHECK --interval=20s --timeout=15s --retries=12 --start-period=3m CMD ["/h
 RUN chmod +x /docker-entrypoint.sh /healthcheck.sh /docker-entrypoint.d/*.sh && \
     apt-get update && \
     apt-get install -y --no-install-recommends $PACKAGES && \
-    dpkg -i dumb-init_"$DUMB_INIT_VERSION"_amd64.deb && \
-    rm dumb-init_"$DUMB_INIT_VERSION"_amd64.deb
+    dpkg -i dumb-init_"$DUMB_INIT_VERSION"_${TARGETARCH}.deb && \
+    rm dumb-init_"$DUMB_INIT_VERSION"_${TARGETARCH}.deb
 
 ######################################################
 # edge (build from source)
@@ -100,7 +101,7 @@ ENV RUBYOPT=-r/puppetserver/docker/ruby-docker-copy-patch
 
 RUN lein clean && \
     lein install && \
-    EZBAKE_ALLOW_UNREPRODUCIBLE_BUILDS=true EZBAKE_NODEPLOY=true COW=base-bionic-amd64.cow MOCK='' GEM_SOURCE=https://rubygems.org lein with-profile ezbake ezbake local-build && \
+    EZBAKE_ALLOW_UNREPRODUCIBLE_BUILDS=true EZBAKE_NODEPLOY=true COW=base-bionic-${TARGETARCH}.cow MOCK='' GEM_SOURCE=https://rubygems.org lein with-profile ezbake ezbake local-build && \
     mv /puppetserver/output/deb/bionic/*/*.deb /puppetserver.deb
 
 FROM base as edge

@@ -1,12 +1,13 @@
 ARG build_type=edge
 ARG UBUNTU_CODENAME=bionic
+ARG TARGETARCH=linux/arm64.linux/amd64
 
 ######################################################
 # base
 ######################################################
 
 FROM ubuntu:18.04 as base
-
+ENV GOARCH=$TARGETARCH GOOS=linux
 ARG PACKAGES=ca-certificates\ git
 ARG DUMB_INIT_VERSION="1.2.5"
 
@@ -46,6 +47,8 @@ EXPOSE 8140
 
 ENTRYPOINT ["dumb-init", "/docker-entrypoint.sh"]
 CMD ["foreground"]
+
+ENV GOARCH=$TARGETARCH GOOS=linux
 
 ADD https://github.com/Yelp/dumb-init/releases/download/v"$DUMB_INIT_VERSION"/dumb-init_"$DUMB_INIT_VERSION"_arm64.deb /
 

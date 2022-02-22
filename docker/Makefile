@@ -52,7 +52,7 @@ else
 		-i $(hadolint_container) $(hadolint_command) Dockerfile
 endif
 
-push-image: prep
+push-image: 
 	docker buildx build --platform linux/arm64,linux/amd64 -t $(NAMESPACE)/puppetserver:$(VERSION) -f puppetserver/Dockerfile --push $(PWD)/..
 ifeq ($(IS_LATEST),true)
 	docker buildx build --platform linux/arm64,linux/amd64 -t $(NAMESPACE)/puppetserver:$(LATEST_VERSION) -f puppetserver/Dockerfile --push $(PWD)/..

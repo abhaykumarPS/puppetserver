@@ -8,7 +8,7 @@ ARG UBUNTU_CODENAME=bionic
 FROM ubuntu:18.04 as base
 
 ARG PACKAGES=ca-certificates\ git
-ARG DUMB_INIT_VERSION="1.2.2"
+ARG DUMB_INIT_VERSION="1.2.5"
 
 LABEL org.label-schema.maintainer="Puppet Release Team <release@puppet.com>" \
       org.label-schema.vendor="Puppet" \
@@ -109,7 +109,7 @@ COPY --from=build /puppetserver.deb /puppetserver.deb
 
 ARG UBUNTU_CODENAME
 ARG install_path=/puppetserver.deb
-ARG deb_uri=http://nightlies.puppet.com/apt/puppet7-nightly-release-$UBUNTU_CODENAME.deb
+ARG deb_uri=http://nightlies.puppet.com/apt/puppet6-nightly-release-$UBUNTU_CODENAME.deb
 
 ######################################################
 # release (build from packages)
@@ -120,7 +120,7 @@ FROM base as release
 ARG version
 ARG UBUNTU_CODENAME
 ARG install_path=puppetserver="$version"-1"$UBUNTU_CODENAME"
-ARG deb_uri=https://apt.puppetlabs.com/puppet7-release-$UBUNTU_CODENAME.deb
+ARG deb_uri=https://apt.puppetlabs.com/puppet6-release-$UBUNTU_CODENAME.deb
 
 ######################################################
 # final image
@@ -141,13 +141,13 @@ ARG deb_uri
 ARG pupperware_analytics_stream="dev"
 
 # hadolint ignore=DL3020
-ADD $deb_uri /puppet.deb
+ADD https://apt.puppetlabs.com/puppet7-release-bionic.deb /puppet6-release-bionic.deb
 
 # hadolint ignore=DL3008,DL3028
-RUN dpkg -i /puppet.deb && \
-    rm /puppet.deb && \
+RUN dpkg -i /puppet6-release-bionic.deb && \
+    rm /puppet6-release-bionic.deb && \
     apt-get update && \
-    apt-get install --no-install-recommends -y $install_path puppetdb-termini && \
+    apt-get install --no-install-recommends -y /puppetserver.deb puppetdb-termini && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     gem install --no-doc r10k && \

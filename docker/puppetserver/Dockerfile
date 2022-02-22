@@ -7,7 +7,7 @@ ARG TARGETARCH=linux/arm64.linux/amd64
 ######################################################
 
 FROM ubuntu:18.04 as base
-ENV GOARCH=$TARGETARCH GOOS=linux
+ENV ARCH=$TARGETARCH OS=linux
 ARG PACKAGES=ca-certificates\ git
 ARG DUMB_INIT_VERSION="1.2.5"
 
@@ -61,11 +61,20 @@ HEALTHCHECK --interval=20s --timeout=15s --retries=12 --start-period=3m CMD ["/h
 
 # no need to pin versions or clear apt cache as its still being used
 # hadolint ignore=DL3008,DL3009
-RUN chmod +x /docker-entrypoint.sh /healthcheck.sh /docker-entrypoint.d/*.sh && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends $PACKAGES && \
-    dpkg -i dumb-init_"$DUMB_INIT_VERSION"_arm64.deb && \
-    rm dumb-init_"$DUMB_INIT_VERSION"_arm64.deb
+
+RUN if [ `uname -m` = "aarch64" ] ; then \
+          chmod +x /docker-entrypoint.sh /healthcheck.sh /docker-entrypoint.d/*.sh && \
+          apt-get update && \
+          apt-get install -y --no-install-recommends $PACKAGES && \
+          dpkg -i dumb-init_"$DUMB_INIT_VERSION"_arm64.deb && \
+          rm dumb-init_"$DUMB_INIT_VERSION"_arm64.deb ;\
+     else \
+          chmod +x /docker-entrypoint.sh /healthcheck.sh /docker-entrypoint.d/*.sh && \
+          apt-get update && \
+          apt-get install -y --no-install-recommends $PACKAGES && \
+          dpkg -i dumb-init_"$DUMB_INIT_VERSION"_amd64.deb && \
+          rm dumb-init_"$DUMB_INIT_VERSION"_amd64.deb ;\
+     fi
 
 ######################################################
 # edge (build from source)

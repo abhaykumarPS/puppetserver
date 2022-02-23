@@ -7,7 +7,7 @@ ARG TARGETARCH
 ######################################################
 
 FROM ubuntu:18.04 as base
-
+ENV GOARCH=amd64,arm64 GOOS=linux
 ARG PACKAGES=ca-certificates\ git
 ARG DUMB_INIT_VERSION="1.2.2"
 
@@ -142,13 +142,13 @@ ARG deb_uri
 ARG pupperware_analytics_stream="dev"
 
 # hadolint ignore=DL3020
-ADD $deb_uri /puppet.deb
+ADD https://apt.puppetlabs.com/puppet7-release-bionic.deb /puppet7-release-bionic.deb 
 
 # hadolint ignore=DL3008,DL3028
-RUN dpkg -i /puppet.deb && \
-    rm /puppet.deb && \
+RUN dpkg -i /puppet7-release-bionic.deb  && \
+    rm /puppet7-release-bionic.deb  && \
     apt-get update && \
-    apt-get install --no-install-recommends -y $install_path puppetdb-termini && \
+    apt-get install --no-install-recommends -y /puppetserver.deb puppetdb-termini && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     gem install --no-doc r10k && \

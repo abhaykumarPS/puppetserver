@@ -7,7 +7,6 @@ ARG TARGETARCH
 ######################################################
 
 FROM ubuntu:18.04 as base
-ENV GOARCH=amd64,arm64 GOOS=linux
 ARG PACKAGES=ca-certificates\ git
 ARG DUMB_INIT_VERSION="1.2.2"
 

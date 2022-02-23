@@ -8,7 +8,7 @@ ARG TARGETARCH
 
 FROM ubuntu:18.04 as base
 ARG PACKAGES=ca-certificates\ git
-ARG DUMB_INIT_VERSION="1.2.2"
+ARG DUMB_INIT_VERSION="1.2.5"
 
 LABEL org.label-schema.maintainer="Puppet Release Team <release@puppet.com>" \
       org.label-schema.vendor="Puppet" \
@@ -61,8 +61,8 @@ HEALTHCHECK --interval=20s --timeout=15s --retries=12 --start-period=3m CMD ["/h
 RUN chmod +x /docker-entrypoint.sh /healthcheck.sh /docker-entrypoint.d/*.sh && \
     apt-get update && \
     apt-get install -y --no-install-recommends $PACKAGES && \
-    dpkg -i dumb-init_"$DUMB_INIT_VERSION"_${TARGETARCH}.deb && \
-    rm dumb-init_"$DUMB_INIT_VERSION"_${TARGETARCH}.deb
+    dpkg -i dumb-init_1.2.5_${TARGETARCH}.deb && \
+    rm dumb-init_1.2.5_${TARGETARCH}.deb
 
 ######################################################
 # edge (build from source)

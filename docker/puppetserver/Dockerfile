@@ -1,6 +1,5 @@
 ARG build_type=edge
 ARG UBUNTU_CODENAME=bionic
-ARG TARGETARCH
 
 ######################################################
 # base
@@ -9,6 +8,7 @@ ARG TARGETARCH
 FROM ubuntu:18.04 as base
 ARG PACKAGES=ca-certificates\ git
 ARG DUMB_INIT_VERSION="1.2.5"
+ARG TARGETARCH
 
 LABEL org.label-schema.maintainer="Puppet Release Team <release@puppet.com>" \
       org.label-schema.vendor="Puppet" \
@@ -69,7 +69,7 @@ RUN chmod +x /docker-entrypoint.sh /healthcheck.sh /docker-entrypoint.d/*.sh && 
 ######################################################
 
 FROM ubuntu:18.04 as build
-
+ARG TARGETARCH
 ENV LANG="en_US.UTF-8"
 
 ADD https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein /usr/local/bin/lein
@@ -108,8 +108,8 @@ FROM base as edge
 COPY --from=build /puppetserver.deb /puppetserver.deb
 
 ARG UBUNTU_CODENAME
-ARG install_path=/puppetserver.deb
-ARG deb_uri=http://nightlies.puppet.com/apt/puppet7-nightly-release-$UBUNTU_CODENAME.deb
+ENV install_path=/puppetserver.deb
+ENV deb_uri=http://nightlies.puppet.com/apt/puppet7-nightly-release-$UBUNTU_CODENAME.deb
 
 ######################################################
 # release (build from packages)
@@ -119,8 +119,8 @@ FROM base as release
 
 ARG version
 ARG UBUNTU_CODENAME
-ARG install_path=puppetserver="$version"-1"$UBUNTU_CODENAME"
-ARG deb_uri=https://apt.puppetlabs.com/puppet7-release-$UBUNTU_CODENAME.deb
+ENV install_path=puppetserver="$version"-1"$UBUNTU_CODENAME"
+ENV deb_uri=https://apt.puppetlabs.com/puppet7-release-$UBUNTU_CODENAME.deb
 
 ######################################################
 # final image
@@ -141,13 +141,13 @@ ARG deb_uri
 ARG pupperware_analytics_stream="dev"
 
 # hadolint ignore=DL3020
-ADD https://apt.puppetlabs.com/puppet7-release-bionic.deb /puppet7-release-bionic.deb 
+ADD $deb_uri /puppet.deb 
 
 # hadolint ignore=DL3008,DL3028
-RUN dpkg -i /puppet7-release-bionic.deb  && \
-    rm /puppet7-release-bionic.deb  && \
+RUN dpkg -i /puppet.deb   && \
+    rm /puppet.deb   && \
     apt-get update && \
-    apt-get install --no-install-recommends -y /puppetserver.deb puppetdb-termini && \
+    apt-get install --no-install-recommends -y $install_path puppetdb-termini && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     gem install --no-doc r10k && \

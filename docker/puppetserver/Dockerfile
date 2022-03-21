@@ -100,7 +100,7 @@ ENV RUBYOPT=-r/puppetserver/docker/ruby-docker-copy-patch
 
 RUN lein clean && \
     lein install && \
-    EZBAKE_ALLOW_UNREPRODUCIBLE_BUILDS=true EZBAKE_NODEPLOY=true COW=base-bionic-${TARGETARCH}.cow MOCK='' GEM_SOURCE=https://rubygems.org lein with-profile ezbake ezbake local-build && \
+    EZBAKE_ALLOW_UNREPRODUCIBLE_BUILDS=true EZBAKE_NODEPLOY=true COW=base-bionic-amd64.cow MOCK='' GEM_SOURCE=https://rubygems.org lein with-profile ezbake ezbake local-build && \
     mv /puppetserver/output/deb/bionic/*/*.deb /puppetserver.deb
 
 FROM base as edge
